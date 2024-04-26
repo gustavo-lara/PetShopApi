@@ -32,7 +32,6 @@ namespace PrimeiraAPI.Controllers
             return await _context.Consultas.ToListAsync();
         }
 
-
 		[HttpGet("{id}")]
         public async Task<ActionResult<Consulta>> GetConsulta(Guid id)
         {
