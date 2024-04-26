@@ -32,26 +32,26 @@ namespace PrimeiraAPI.Controllers
 			return await _context.Vendas.ToListAsync();
 		}
 
-		//// GET: api/Vendas/GetDate/{data}
-		//[HttpGet("/GetByDate/{data}")]
-		//public async Task<ActionResult<IEnumerable<Venda>>> GetBanhosTosasDate(DateTime data)
-		//{
-		//	if (_context.Vendas == null)
-		//	{
-		//		return NotFound();
-		//	}
+		// GET: api/Vendas/GetDate/{data}
+		[HttpGet("GetByDate/{data}")]
+		public async Task<ActionResult<IEnumerable<Venda>>> GetBanhosTosasDate(DateTime data)
+		{
+			if (_context.Vendas == null)
+			{
+				return NotFound();
+			}
 
-		//	var listaVenda = await _context.Vendas.Where(b => b.VendaData.Date == data.Date).ToListAsync();
+			var listaVenda = await _context.Vendas.Where(b => b.VendaData.Date == data.Date).ToListAsync();
 
-		//	if (listaVenda == null)
-		//	{
-		//		return NoContent();
-		//	}
+			if (listaVenda == null)
+			{
+				return NoContent();
+			}
 
-		//	return Ok(listaVenda);
-		//}
+			return Ok(listaVenda);
+		}
 
-		// GET: api/Vendas/5
+		//GET: api/Vendas/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Venda>> GetVenda(Guid id)
 		{
@@ -146,5 +146,23 @@ namespace PrimeiraAPI.Controllers
 		{
 			return (_context.Vendas?.Any(e => e.VendaId == id)).GetValueOrDefault();
 		}
+		[HttpGet("GetVendaByValor/{valor}")]
+		public async Task<ActionResult<IEnumerable<Venda>>> GetVendasByValor(double valor)
+		{
+			if (_context.Vendas == null)
+			{
+				return NotFound();
+			}
+
+			var vendas = await _context.Vendas.Where(p => p.ValorVenda == valor).ToListAsync();
+
+			if (!vendas.Any())
+			{
+				return NotFound("Não há vendas com este valor!");
+			}
+
+			return Ok(vendas);
+		}
+
 	}
 }

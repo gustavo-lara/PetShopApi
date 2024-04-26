@@ -32,7 +32,7 @@ namespace PrimeiraAPI.Controllers
             return await _context.Consultas.ToListAsync();
         }
 
-		[HttpGet("{id}")]
+	    [HttpGet("{id}")]
         public async Task<ActionResult<Consulta>> GetConsulta(Guid id)
         {
           if (_context.Consultas == null)
@@ -49,9 +49,29 @@ namespace PrimeiraAPI.Controllers
             return consulta;
         }
 
-        // PUT: api/Consultas/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+
+		[HttpGet("GetByDate/{data}")]
+		public async Task<ActionResult<IEnumerable<Consulta>>> GetConsultasDate(DateTime data)
+		{
+			if (_context.Consultas == null)
+			{
+				return NotFound();
+			}
+
+			var listaConsultas = await _context.Consultas.Where(b => b.DataConsulta.Date == data.Date).ToListAsync();
+
+			if (listaConsultas == null)
+			{
+				return NoContent();
+			}
+
+			return Ok(listaConsultas);
+		}
+
+
+		// PUT: api/Consultas/5
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPut("{id}")]
         public async Task<IActionResult> PutConsulta(Guid id, Consulta consulta)
         {
             if (id != consulta.ConsultaId)
@@ -115,7 +135,27 @@ namespace PrimeiraAPI.Controllers
             return NoContent();
         }
 
-        private bool ConsultaExists(Guid id)
+		// DELETE: api/Consultas/Datetime
+		[HttpDelete]
+		public async Task<IActionResult> DeleteConsultaByDateTime(DateTime data)
+		{
+			if (_context.Consultas == null)
+			{
+				return NotFound();
+			}
+			var consulta = await _context.Consultas.FindAsync(data);
+			if (consulta == null)
+			{
+				return NotFound();
+			}
+
+			_context.Consultas.Remove(consulta);
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		private bool ConsultaExists(Guid id)
         {
             return (_context.Consultas?.Any(e => e.ConsultaId == id)).GetValueOrDefault();
         }

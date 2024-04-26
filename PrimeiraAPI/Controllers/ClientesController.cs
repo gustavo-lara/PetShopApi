@@ -86,6 +86,7 @@ namespace PrimeiraAPI.Controllers
 			{
 				return BadRequest();
 			}
+	
 
 			_context.Entry(cliente).State = EntityState.Modified;
 			try
@@ -105,6 +106,7 @@ namespace PrimeiraAPI.Controllers
 			}
 			return NoContent();
 		}
+
 
 		// POST: api/Clientes
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

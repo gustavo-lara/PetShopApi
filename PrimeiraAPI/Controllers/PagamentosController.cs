@@ -109,7 +109,13 @@ namespace PrimeiraAPI.Controllers
           {
               return Problem("Entity set 'MyContext.Pagamentos'  is null.");
           }
-            _context.Pagamentos.Add(pagamento);
+
+			if (pagamento.ValorPagamento <= 0)
+			{
+				return BadRequest("O pagamento não pode ser negativo!");
+			}
+
+			_context.Pagamentos.Add(pagamento);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPagamento", new { id = pagamento.PagamentoId }, pagamento);

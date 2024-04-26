@@ -117,6 +117,25 @@ namespace PrimeiraAPI.Controllers
 			}
 
 			return Ok(produtos);
+
+		}
+
+		[HttpGet("GetVendaByQuantidade/{Quantidade}")]
+		public async Task<ActionResult<IEnumerable<Produto>>> GetVendasByValor(double qntd)
+		{
+			if (_context.Produtos == null)
+			{
+				return NotFound();
+			}
+
+			var vendas = await _context.Produtos.Where(p => p.ProdutoQtnd == qntd).ToListAsync();
+
+			if (!vendas.Any())
+			{
+				return NotFound("Não há produtos com está qunatidade!");
+			}
+
+			return Ok(vendas);
 		}
 
 		// POST: api/Produtos
@@ -168,6 +187,24 @@ namespace PrimeiraAPI.Controllers
 		private bool ProdutoExists(Guid id)
 		{
 			return (_context.Produtos?.Any(e => e.ProdutoId == id)).GetValueOrDefault();
+		}
+
+		[HttpGet("GetProdutosByValor/{valor}")]
+		public async Task<ActionResult<IEnumerable<Produto>>> GetProdutosByValor(double valor)
+		{
+			if (_context.Produtos == null)
+			{
+				return NotFound();
+			}
+
+			var produtos = await _context.Produtos.Where(p => p.ProdutoValor == valor).ToListAsync();
+
+			if (!produtos.Any())
+			{
+				return NotFound("Não há produtos com este valor!");
+			}
+
+			return Ok(produtos);
 		}
 	}
 }
