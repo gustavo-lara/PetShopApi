@@ -25,40 +25,40 @@ namespace PrimeiraAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BanhoTosa>>> GetBanhosTosas()
         {
-          if (_context.BanhosTosas == null)
-          {
-              return NotFound();
-          }
+            if (_context.BanhosTosas == null)
+            {
+                return NotFound();
+            }
             return await _context.BanhosTosas.ToListAsync();
         }
 
-		// GET: api/BanhosTosas/GetDate/{data}
-		[HttpGet("/GetByDate/{data}")]
-		public async Task<ActionResult<IEnumerable<BanhoTosa>>> GetBanhosTosasDate(DateTime data)
-		{
-			if (_context.BanhosTosas == null)
-			{
-				return NotFound();
-			}
+        // GET: api/BanhosTosas/GetDate/{data}
+        [HttpGet("/GetByDate/{data}")]
+        public async Task<ActionResult<IEnumerable<BanhoTosa>>> GetBanhosTosasDate(DateTime data)
+        {
+            if (_context.BanhosTosas == null)
+            {
+                return NotFound();
+            }
 
-			var listaBanhosTosas = await _context.BanhosTosas.Where(b => b.DataBanhoTosa.Date  == data.Date).ToListAsync();
+            var listaBanhosTosas = await _context.BanhosTosas.Where(b => b.DataBanhoTosa.Date == data.Date).ToListAsync();
 
-			if (listaBanhosTosas == null)
+            if (listaBanhosTosas == null)
             {
                 return NoContent();
             }
 
-			return Ok(listaBanhosTosas);
-		}
+            return Ok(listaBanhosTosas);
+        }
 
-		// GET: api/BanhosTosas/5
-		[HttpGet("{id}")]
+        // GET: api/BanhosTosas/5
+        [HttpGet("{id}")]
         public async Task<ActionResult<BanhoTosa>> GetBanhoTosa(Guid id)
         {
-          if (_context.BanhosTosas == null)
-          {
-              return NotFound();
-          }
+            if (_context.BanhosTosas == null)
+            {
+                return NotFound();
+            }
             var banhoTosa = await _context.BanhosTosas.FindAsync(id);
 
             if (banhoTosa == null)
@@ -69,9 +69,11 @@ namespace PrimeiraAPI.Controllers
             return banhoTosa;
         }
 
-		// PUT: api/BanhosTosas/5
-		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-		[HttpPut("{id}")]
+
+
+        // PUT: api/BanhosTosas/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutBanhoTosa(Guid id, BanhoTosa banhoTosa)
         {
             if (id != banhoTosa.BanhoTosaId)
@@ -105,15 +107,44 @@ namespace PrimeiraAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<BanhoTosa>> PostBanhoTosa(BanhoTosa banhoTosa)
         {
-          if (_context.BanhosTosas == null)
-          {
-              return Problem("Entity set 'MyContext.BanhosTosas'  is null.");
-          }
+            if (_context.BanhosTosas == null)
+            {
+                return Problem("Entity set 'MyContext.BanhosTosas'  is null.");
+            }
             _context.BanhosTosas.Add(banhoTosa);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBanhoTosa", new { id = banhoTosa.BanhoTosaId }, banhoTosa);
         }
+
+
+
+        // POST: api/BanhosTosas/teste
+        [HttpPost("BanhosTosas/teste")]
+        public async Task<ActionResult<BanhoTosa>> AgendarBanhoeTosaAsync(BanhoTosa banhoTosa)
+        {
+            DateTime data = banhoTosa.DataBanhoTosa;
+
+            // Verifica se a data já passou
+            if (data < DateTime.Today)
+            {
+                // Manuseie o cenário de data inválida (por exemplo, exiba uma mensagem de erro)
+                return Problem("O Banho e Tosa não pode ser agendada para uma data passada.");
+            }
+
+            // Verifica se a data é o dia anterior ao atual
+            if (data == DateTime.Today.AddDays(-1))
+            {
+                // Manuseie o cenário de data inválida (por exemplo, exiba uma mensagem de erro)
+                return Problem("O Banho e Tosa não pode ser agendada para o dia anterior ao atual.");
+            }
+
+            _context.BanhosTosas.Add(banhoTosa);
+            await _context.SaveChangesAsync();
+            return Ok("data:" + data);
+
+        }
+
 
         // DELETE: api/BanhosTosas/5
         [HttpDelete("{id}")]
