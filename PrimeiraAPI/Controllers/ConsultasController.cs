@@ -25,20 +25,20 @@ namespace PrimeiraAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Consulta>>> GetConsultas()
         {
-          if (_context.Consultas == null)
-          {
-              return NotFound();
-          }
+            if (_context.Consultas == null)
+            {
+                return NotFound();
+            }
             return await _context.Consultas.ToListAsync();
         }
 
-		[HttpGet("{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Consulta>> GetConsulta(Guid id)
         {
-          if (_context.Consultas == null)
-          {
-              return NotFound();
-          }
+            if (_context.Consultas == null)
+            {
+                return NotFound();
+            }
             var consulta = await _context.Consultas.FindAsync(id);
 
             if (consulta == null)
@@ -85,15 +85,43 @@ namespace PrimeiraAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Consulta>> PostConsulta(Consulta consulta)
         {
-          if (_context.Consultas == null)
-          {
-              return Problem("Entity set 'MyContext.Consultas'  is null.");
-          }
+            if (_context.Consultas == null)
+            {
+                return Problem("Entity set 'MyContext.Consultas'  is null.");
+            }
             _context.Consultas.Add(consulta);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetConsulta", new { id = consulta.ConsultaId }, consulta);
         }
+
+
+        // POST: api/Consultas/teste
+        [HttpPost("Consultas/teste")]
+        public async Task<ActionResult<Consulta>> AgendarConsultaAsync(Consulta consulta)
+        {
+            DateTime data = consulta.DataConsulta;
+
+            // Verifica se a data já passou
+            if (data < DateTime.Today)
+            {
+                // Manuseie o cenário de data inválida (por exemplo, exiba uma mensagem de erro)
+                return Problem("A Consulta não pode ser agendada para uma data passada.");
+            }
+
+            // Verifica se a data é o dia anterior ao atual
+            if (data == DateTime.Today.AddDays(-1))
+            {
+                // Manuseie o cenário de data inválida (por exemplo, exiba uma mensagem de erro)
+                return Problem("A Consulta não pode ser agendada para o dia anterior ao atual.");
+            }
+
+            _context.Consultas.Add(consulta);
+            await _context.SaveChangesAsync();
+            return Ok("data:" + data);
+
+        }
+
 
         // DELETE: api/Consultas/5
         [HttpDelete("{id}")]

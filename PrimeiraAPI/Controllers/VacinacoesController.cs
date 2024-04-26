@@ -25,10 +25,10 @@ namespace PrimeiraAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Vacinacao>>> GetVacinacoes()
         {
-          if (_context.Vacinacoes == null)
-          {
-              return NotFound();
-          }
+            if (_context.Vacinacoes == null)
+            {
+                return NotFound();
+            }
             return await _context.Vacinacoes.ToListAsync();
         }
 
@@ -36,10 +36,10 @@ namespace PrimeiraAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Vacinacao>> GetVacinacao(Guid id)
         {
-          if (_context.Vacinacoes == null)
-          {
-              return NotFound();
-          }
+            if (_context.Vacinacoes == null)
+            {
+                return NotFound();
+            }
             var vacinacao = await _context.Vacinacoes.FindAsync(id);
 
             if (vacinacao == null)
@@ -86,15 +86,47 @@ namespace PrimeiraAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Vacinacao>> PostVacinacao(Vacinacao vacinacao)
         {
-          if (_context.Vacinacoes == null)
-          {
-              return Problem("Entity set 'MyContext.Vacinacoes'  is null.");
-          }
+            if (_context.Vacinacoes == null)
+            {
+                return Problem("Entity set 'MyContext.Vacinacoes'  is null.");
+            }
             _context.Vacinacoes.Add(vacinacao);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetVacinacao", new { id = vacinacao.VacinacaoId }, vacinacao);
         }
+
+
+
+
+        // POST: api/Vacinacoes/teste
+        [HttpPost("Vacinacoes/teste")]
+        public async Task<ActionResult<Vacinacao>> AgendarVacinaAsync(Vacinacao vacinacao)
+        {
+            DateTime data = vacinacao.DataVacinacao;
+
+            // Verifica se a data já passou
+            if (data < DateTime.Today)
+            {
+                // Manuseie o cenário de data inválida (por exemplo, exiba uma mensagem de erro)
+                return Problem("A vacinação não pode ser agendada para uma data passada.");
+            }
+
+            // Verifica se a data é o dia anterior ao atual
+            if (data == DateTime.Today.AddDays(-1))
+            {
+                // Manuseie o cenário de data inválida (por exemplo, exiba uma mensagem de erro)
+                return Problem("A vacinação não pode ser agendada para o dia anterior ao atual.");
+            }
+
+            _context.Vacinacoes.Add(vacinacao);
+            await _context.SaveChangesAsync();
+            return Ok("data:" + data);
+
+        }
+
+
+
 
         // DELETE: api/Vacinacoes/5
         [HttpDelete("{id}")]
