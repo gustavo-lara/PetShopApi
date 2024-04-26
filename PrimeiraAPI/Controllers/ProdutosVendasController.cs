@@ -25,10 +25,10 @@ namespace PrimeiraAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProdutoVenda>>> GetProdutosVendas()
         {
-          if (_context.ProdutosVendas == null)
-          {
-              return NotFound();
-          }
+            if (_context.ProdutosVendas == null)
+            {
+                return NotFound();
+            }
             return await _context.ProdutosVendas.ToListAsync();
         }
 
@@ -36,10 +36,10 @@ namespace PrimeiraAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProdutoVenda>> GetProdutoVenda(Guid id)
         {
-          if (_context.ProdutosVendas == null)
-          {
-              return NotFound();
-          }
+            if (_context.ProdutosVendas == null)
+            {
+                return NotFound();
+            }
             var produtoVenda = await _context.ProdutosVendas.FindAsync(id);
 
             if (produtoVenda == null)
@@ -86,10 +86,10 @@ namespace PrimeiraAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<ProdutoVenda>> PostProdutoVenda(ProdutoVenda produtoVenda)
         {
-          if (_context.ProdutosVendas == null)
-          {
-              return Problem("Entity set 'MyContext.ProdutosVendas'  is null.");
-          }
+            if (_context.ProdutosVendas == null)
+            {
+                return Problem("Entity set 'MyContext.ProdutosVendas'  is null.");
+            }
             // Buscar o produto no banco de dados
             var produtoBanco = await _context.Produtos.FindAsync(produtoVenda.ProdutoId);
             if (produtoBanco == null)
@@ -98,7 +98,7 @@ namespace PrimeiraAPI.Controllers
             }
 
             // Verificar se a qunatidade do produto é suficiente
-            if(produtoBanco.ProdutoQtnd < produtoVenda.QntdVenda)
+            if (produtoBanco.ProdutoQtnd < produtoVenda.QntdVenda)
             {
                 return BadRequest("Quantidade insuficiente");
             }
@@ -107,13 +107,13 @@ namespace PrimeiraAPI.Controllers
             //Atualizando o valor da venda
             var venda = await _context.Vendas.FindAsync(produtoVenda.VendaId);
             //Atualizando o valor da venda
-            venda.ValorVenda += valorItem;
+            venda!.ValorVenda += valorItem;
             //Atualizando a qunatidade do produto
             produtoBanco.ProdutoQtnd -= produtoVenda.QntdVenda;
 
             _context.Produtos.Update(produtoBanco);
-			_context.Vendas.Update(venda);
-			_context.ProdutosVendas.Add(produtoVenda);
+            _context.Vendas.Update(venda);
+            _context.ProdutosVendas.Add(produtoVenda);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProdutoVenda", new { id = produtoVenda.ProdutoVendaId }, produtoVenda);

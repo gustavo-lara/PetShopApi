@@ -10,159 +10,141 @@ using PrimeiraAPI.Models;
 
 namespace PrimeiraAPI.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class VendasController : ControllerBase
-	{
-		private readonly MyContext _context;
+    [Route("api/[controller]")]
+    [ApiController]
+    public class VendasController : ControllerBase
+    {
+        private readonly MyContext _context;
 
-		public VendasController(MyContext context)
-		{
-			_context = context;
-		}
+        public VendasController(MyContext context)
+        {
+            _context = context;
+        }
 
-		// GET: api/Vendas
-		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Venda>>> GetVendas()
-		{
-			if (_context.Vendas == null)
-			{
-				return NotFound();
-			}
-			return await _context.Vendas.ToListAsync();
-		}
+        // GET: api/Vendas
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Venda>>> GetVendas()
+        {
+            if (_context.Vendas == null)
+            {
+                return NotFound();
+            }
+            return await _context.Vendas.ToListAsync();
+        }
 
-		// GET: api/Vendas/GetDate/{data}
-		[HttpGet("GetByDate/{data}")]
-		public async Task<ActionResult<IEnumerable<Venda>>> GetBanhosTosasDate(DateTime data)
-		{
-			if (_context.Vendas == null)
-			{
-				return NotFound();
-			}
+        //// GET: api/Vendas/GetDate/{data}
+        //[HttpGet("/GetByDate/{data}")]
+        //public async Task<ActionResult<IEnumerable<Venda>>> GetBanhosTosasDate(DateTime data)
+        //{
+        //	if (_context.Vendas == null)
+        //	{
+        //		return NotFound();
+        //	}
 
-			var listaVenda = await _context.Vendas.Where(b => b.VendaData.Date == data.Date).ToListAsync();
+        //	var listaVenda = await _context.Vendas.Where(b => b.VendaData.Date == data.Date).ToListAsync();
 
-			if (listaVenda == null)
-			{
-				return NoContent();
-			}
+        //	if (listaVenda == null)
+        //	{
+        //		return NoContent();
+        //	}
 
-			return Ok(listaVenda);
-		}
+        //	return Ok(listaVenda);
+        //}
 
-		//GET: api/Vendas/5
-		[HttpGet("{id}")]
-		public async Task<ActionResult<Venda>> GetVenda(Guid id)
-		{
-			if (_context.Vendas == null)
-			{
-				return NotFound();
-			}
-			var venda = await _context.Vendas.FindAsync(id);
+        // GET: api/Vendas/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Venda>> GetVenda(Guid id)
+        {
+            if (_context.Vendas == null)
+            {
+                return NotFound();
+            }
+            var venda = await _context.Vendas.FindAsync(id);
 
-			if (venda == null)
-			{
-				return NotFound();
-			}
+            if (venda == null)
+            {
+                return NotFound();
+            }
 
-			return venda;
-		}
+            return venda;
+        }
 
-		// PUT: api/Vendas/5
-		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-		[HttpPut("{id}")]
-		public async Task<IActionResult> PutVenda(Guid id, Venda venda)
-		{
-			if (id != venda.VendaId)
-			{
-				return BadRequest();
-			}
+        // PUT: api/Vendas/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutVenda(Guid id, Venda venda)
+        {
+            if (id != venda.VendaId)
+            {
+                return BadRequest();
+            }
 
-			_context.Entry(venda).State = EntityState.Modified;
+            _context.Entry(venda).State = EntityState.Modified;
 
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!VendaExists(id))
-				{
-					return NotFound();
-				}
-				else
-				{
-					throw;
-				}
-			}
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VendaExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-			return NoContent();
-		}
+            return NoContent();
+        }
 
-		// POST: api/Vendas
-		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-		[HttpPost]
-		public async Task<ActionResult<Venda>> PostVenda(Venda venda)
-		{
-			if (_context.Vendas == null)
-			{
-				return Problem("Entity set 'MyContext.Vendas'  is null.");
-			}
-			var ValorVenda = venda.ValorVenda;
-			if (ValorVenda <= 0)
-			{
-				return BadRequest("O Valor da Venda não pode ser negativo ou menor que zero!");
-			}
-			var cliente = await _context.Clientes.FindAsync(venda.ClienteId); if (cliente == null) { return BadRequest("Cliente não encontrado!"); }
-			venda.Cliente = cliente;
-			_context.Vendas.Add(venda);
-			await _context.SaveChangesAsync();
+        // POST: api/Vendas
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Venda>> PostVenda(Venda venda)
+        {
+            if (_context.Vendas == null)
+            {
+                return Problem("Entity set 'MyContext.Vendas'  is null.");
+            }
+            var ValorVenda = venda.ValorVenda;
+            if (ValorVenda <= 0)
+            {
+                return BadRequest("O Valor da Venda não pode ser negativo ou menor que zero!");
+            }
+            var cliente = await _context.Clientes.FindAsync(venda.ClienteId); if (cliente == null) { return BadRequest("Cliente não encontrado!"); }
+            venda.Cliente = cliente;
+            _context.Vendas.Add(venda);
+            await _context.SaveChangesAsync();
 
-			return CreatedAtAction("GetVenda", new { id = venda.VendaId }, venda);
-		}
+            return CreatedAtAction("GetVenda", new { id = venda.VendaId }, venda);
+        }
 
-		// DELETE: api/Vendas/5
-		[HttpDelete("{id}")]
-		public async Task<IActionResult> DeleteVenda(Guid id)
-		{
-			if (_context.Vendas == null)
-			{
-				return NotFound();
-			}
-			var venda = await _context.Vendas.FindAsync(id);
-			if (venda == null)
-			{
-				return NotFound();
-			}
+        // DELETE: api/Vendas/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteVenda(Guid id)
+        {
+            if (_context.Vendas == null)
+            {
+                return NotFound();
+            }
+            var venda = await _context.Vendas.FindAsync(id);
+            if (venda == null)
+            {
+                return NotFound();
+            }
 
-			_context.Vendas.Remove(venda);
-			await _context.SaveChangesAsync();
+            _context.Vendas.Remove(venda);
+            await _context.SaveChangesAsync();
 
-			return NoContent();
-		}
+            return NoContent();
+        }
 
-		private bool VendaExists(Guid id)
-		{
-			return (_context.Vendas?.Any(e => e.VendaId == id)).GetValueOrDefault();
-		}
-		[HttpGet("GetVendaByValor/{valor}")]
-		public async Task<ActionResult<IEnumerable<Venda>>> GetVendasByValor(double valor)
-		{
-			if (_context.Vendas == null)
-			{
-				return NotFound();
-			}
-
-			var vendas = await _context.Vendas.Where(p => p.ValorVenda == valor).ToListAsync();
-
-			if (!vendas.Any())
-			{
-				return NotFound("Não há vendas com este valor!");
-			}
-
-			return Ok(vendas);
-		}
-
-	}
+        private bool VendaExists(Guid id)
+        {
+            return (_context.Vendas?.Any(e => e.VendaId == id)).GetValueOrDefault();
+        }
+    }
 }
